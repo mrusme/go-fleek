@@ -16,7 +16,7 @@ type FleekClient struct {
 }
 
 type Team struct {
-  Id                          interface{} `json:"id"`
+  Id                          string `json:"id"`
   Name                        string `json:"name"`
 }
 
@@ -34,6 +34,70 @@ type Site struct {
   Platform                    string `json:"platform"`
   PublishedDeploy             PublishedDeploy `json:"publishedDeploy"`
   Team                        Team `json:"team"`
+}
+
+type GraphqlSite struct {
+  Id                  graphql.ID
+  Name                graphql.String
+  Slug                graphql.String
+  Description         graphql.String
+  Platform            graphql.String
+
+  Team struct {
+    Id                graphql.ID
+    Name              graphql.String
+  }
+
+  BuildSettings struct {
+    BuildCommand      graphql.String
+    BaseDirectoryPath graphql.String
+    PublishDirectoryPath graphql.String
+    DockerImage          graphql.String
+    EnvironmentVariables []struct {
+      Name               graphql.String
+      Value              graphql.String
+    }
+  }
+
+  DeploySettings struct {
+    AutoPublishing       graphql.Boolean
+    PRDeployPreviews     graphql.Boolean
+    DfinityUseProxy      graphql.Boolean
+    Source struct {
+      IPFSSource struct {
+        CID                graphql.String
+      } `graphql:"... on IpfsSource"`
+      Repository struct {
+        Type               graphql.String
+        URL                graphql.String
+        Branch             graphql.String
+      } `graphql:"... on Repository"`
+    }
+  }
+
+  PublishedDeploy struct {
+    Id                graphql.ID
+    Status            graphql.String
+    IpfsHash          graphql.String
+    PreviewImage      graphql.String
+    AutoPublish       graphql.Boolean
+    Published         graphql.Boolean
+    Log               graphql.String
+    Repository struct {
+      Commit          graphql.String
+      Branch          graphql.String
+      Owner           graphql.String
+      Name            graphql.String
+      Message         graphql.String
+    }
+    TotalTime         graphql.Int
+    StartedAt         graphql.String
+    CompletedAt       graphql.String
+  }
+
+  CreatedBy           graphql.ID
+  CreatedAt           graphql.String
+  UpdatedAt           graphql.String
 }
 
 func New(token string) (*FleekClient, error) {
@@ -59,22 +123,7 @@ func New(token string) (*FleekClient, error) {
 func (f *FleekClient) GetSitesByTeamId(teamId string) ([]Site, error) {
   var query struct {
       GetSitesByTeam struct {
-        Sites []struct {
-          Id                  graphql.ID
-          Name                graphql.String
-          Platform            graphql.String
-          PublishedDeploy struct {
-              Id              graphql.ID
-              Status          graphql.String
-              IpfsHash        graphql.String
-              Log             graphql.String
-              CompletedAt     graphql.String
-          }
-          Team struct {
-              Id              graphql.ID
-              Name            graphql.String
-          }
-        }
+        Sites                   []GraphqlSite
         NextToken               graphql.String
       } `graphql:"getSitesByTeam(teamId: $teamId, limit: 100)"`
   }
@@ -102,7 +151,7 @@ func (f *FleekClient) GetSitesByTeamId(teamId string) ([]Site, error) {
         CompletedAt: string(querySite.PublishedDeploy.CompletedAt),
       },
       Team: Team{
-        Id:   querySite.Team.Id,
+        Id:   querySite.Team.Id.(string),
         Name: string(querySite.Name),
       },
     }
@@ -116,20 +165,7 @@ func (f *FleekClient) GetSitesByTeamId(teamId string) ([]Site, error) {
 func (f *FleekClient) GetSiteBySlug(slug string) (Site, error) {
   var query struct {
       GetSiteBySlug struct {
-        Id                  graphql.ID
-        Name                graphql.String
-        Platform            graphql.String
-        PublishedDeploy struct {
-            Id              graphql.ID
-            Status          graphql.String
-            IpfsHash        graphql.String
-            Log             graphql.String
-            CompletedAt     graphql.String
-        }
-        Team struct {
-            Id              graphql.ID
-            Name            graphql.String
-        }
+        GraphqlSite
       } `graphql:"getSiteBySlug(slug: $slug)"`
   }
 
@@ -154,7 +190,7 @@ func (f *FleekClient) GetSiteBySlug(slug string) (Site, error) {
       CompletedAt: string(query.GetSiteBySlug.PublishedDeploy.CompletedAt),
     },
     Team: Team{
-      Id:   query.GetSiteBySlug.Team.Id,
+      Id:   query.GetSiteBySlug.Team.Id.(string),
       Name: string(query.GetSiteBySlug.Team.Name),
     },
   }
