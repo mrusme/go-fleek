@@ -19,10 +19,11 @@ func TestGetSitesByTeamId(t *testing.T) {
 
   for _, site := range sites {
     fmt.Printf(
-      "Site ID: %v\nName: %s\nPlatform: %s\n\n",
+      "Site ID: %v\nName: %s\nPlatform: %s\nUpdated at: %s\n\n",
       site.Id,
       site.Name,
       site.Platform,
+      site.UpdatedAt,
     )
   }
 
