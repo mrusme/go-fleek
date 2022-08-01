@@ -1,18 +1,18 @@
 package fleek
 
 import (
-	"context"
-	"net/http"
+  "context"
+  "net/http"
 
-	"github.com/hasura/go-graphql-client"
-	"golang.org/x/oauth2"
+  "github.com/hasura/go-graphql-client"
+  "golang.org/x/oauth2"
 )
 
 type FleekClient struct {
-  client            *graphql.Client
-  httpClient        *http.Client
-  staticToken       oauth2.TokenSource
-  token             string
+  client                      *graphql.Client
+  httpClient                  *http.Client
+  staticToken                 oauth2.TokenSource
+  token                       string
 }
 
 type Team struct {
@@ -37,67 +37,67 @@ type Site struct {
 }
 
 type GraphqlSite struct {
-  Id                  graphql.ID
-  Name                graphql.String
-  Slug                graphql.String
-  Description         graphql.String
-  Platform            graphql.String
+  Id                          graphql.ID
+  Name                        graphql.String
+  Slug                        graphql.String
+  Description                 graphql.String
+  Platform                    graphql.String
 
   Team struct {
-    Id                graphql.ID
-    Name              graphql.String
+    Id                        graphql.ID
+    Name                      graphql.String
   }
 
   BuildSettings struct {
-    BuildCommand      graphql.String
-    BaseDirectoryPath graphql.String
-    PublishDirectoryPath graphql.String
-    DockerImage          graphql.String
+    BuildCommand              graphql.String
+    BaseDirectoryPath         graphql.String
+    PublishDirectoryPath      graphql.String
+    DockerImage               graphql.String
     EnvironmentVariables []struct {
-      Name               graphql.String
-      Value              graphql.String
+      Name                    graphql.String
+      Value                   graphql.String
     }
   }
 
   DeploySettings struct {
-    AutoPublishing       graphql.Boolean
-    PRDeployPreviews     graphql.Boolean
-    DfinityUseProxy      graphql.Boolean
+    AutoPublishing            graphql.Boolean
+    PRDeployPreviews          graphql.Boolean
+    DfinityUseProxy           graphql.Boolean
     Source struct {
       IPFSSource struct {
-        CID                graphql.String
+        CID                   graphql.String
       } `graphql:"... on IpfsSource"`
       Repository struct {
-        Type               graphql.String
-        URL                graphql.String
-        Branch             graphql.String
+        Type                  graphql.String
+        URL                   graphql.String
+        Branch                graphql.String
       } `graphql:"... on Repository"`
     }
   }
 
   PublishedDeploy struct {
-    Id                graphql.ID
-    Status            graphql.String
-    IpfsHash          graphql.String
-    PreviewImage      graphql.String
-    AutoPublish       graphql.Boolean
-    Published         graphql.Boolean
-    Log               graphql.String
+    Id                        graphql.ID
+    Status                    graphql.String
+    IpfsHash                  graphql.String
+    PreviewImage              graphql.String
+    AutoPublish               graphql.Boolean
+    Published                 graphql.Boolean
+    Log                       graphql.String
     Repository struct {
-      Commit          graphql.String
-      Branch          graphql.String
-      Owner           graphql.String
-      Name            graphql.String
-      Message         graphql.String
+      Commit                  graphql.String
+      Branch                  graphql.String
+      Owner                   graphql.String
+      Name                    graphql.String
+      Message                 graphql.String
     }
-    TotalTime         graphql.Int
-    StartedAt         graphql.String
-    CompletedAt       graphql.String
+    TotalTime                 graphql.Int
+    StartedAt                 graphql.String
+    CompletedAt               graphql.String
   }
 
-  CreatedBy           graphql.ID
-  CreatedAt           graphql.String
-  UpdatedAt           graphql.String
+  CreatedBy                   graphql.ID
+  CreatedAt                   graphql.String
+  UpdatedAt                   graphql.String
 }
 
 func New(token string) (*FleekClient, error) {
@@ -165,7 +165,7 @@ func (f *FleekClient) GetSitesByTeamId(teamId string) ([]Site, error) {
 func (f *FleekClient) GetSiteBySlug(slug string) (Site, error) {
   var query struct {
       GetSiteBySlug struct {
-        GraphqlSite
+       GraphqlSite
       } `graphql:"getSiteBySlug(slug: $slug)"`
   }
 
