@@ -243,6 +243,7 @@ func (f *FleekClient) convertGraphqlSiteToSite(gqlSite GraphqlSite) (Site, error
 }
 
 
+// Initializes new FleekClient
 func New(token string) (*FleekClient, error) {
   fleekClient := new(FleekClient)
 
@@ -263,6 +264,7 @@ func New(token string) (*FleekClient, error) {
   return fleekClient, nil
 }
 
+// Gets all sites of a team, with the team ID being the *slug* (e.g. `my-team`)
 func (f *FleekClient) GetSitesByTeamId(teamId string) ([]Site, error) {
   var query struct {
       GetSitesByTeam struct {
@@ -292,7 +294,7 @@ func (f *FleekClient) GetSitesByTeamId(teamId string) ([]Site, error) {
   return sites, nil
 }
 
-
+// Gets a single site by its slug
 func (f *FleekClient) GetSiteBySlug(slug string) (Site, error) {
   var query struct {
       GetSiteBySlug struct {
