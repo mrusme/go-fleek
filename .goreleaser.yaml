@@ -1,0 +1,6 @@
+builds:
+  -
+    id: "release"
+    command: test
+    skip: true
+
